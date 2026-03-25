@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planespotting Israel | helenny</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f4f6fb; color: #1a1a2e; }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      color: #fff;
+      padding: 60px 24px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: "✈";
+      position: absolute;
+      font-size: 300px;
+      opacity: 0.04;
+      top: -60px;
+      left: -40px;
+      transform: rotate(-20deg);
+    }
+    header h1 { font-size: 2.6rem; font-weight: 800; letter-spacing: 1px; }
+    header h1 span { color: #60a5fa; }
+    header p { margin-top: 12px; font-size: 1.1rem; color: #94a3b8; max-width: 500px; margin-inline: auto; }
+    .header-badge {
+      display: inline-block; margin-top: 20px;
+      background: rgba(96,165,250,0.15); border: 1px solid rgba(96,165,250,0.3);
+      color: #60a5fa; padding: 6px 18px; border-radius: 20px; font-size: 0.85rem;
+    }
+
+    /* NAV */
+    nav {
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      position: sticky; top: 0; z-index: 100;
+      display: flex; justify-content: center; gap: 8px;
+      padding: 14px 24px; flex-wrap: wrap;
+    }
+    nav a {
+      text-decoration: none; color: #475569; font-size: 0.9rem; font-weight: 600;
+      padding: 8px 18px; border-radius: 8px; transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    nav a:hover { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+
+    /* MAIN */
+    .container { max-width: 1050px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* AIRPORT SECTION */
+    .airport {
+      margin-bottom: 64px;
+      scroll-margin-top: 80px;
+    }
+    .airport-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px; padding-bottom: 16px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .airport-icon {
+      width: 56px; height: 56px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; flex-shrink: 0;
+    }
+    .airport-header h2 { font-size: 1.6rem; font-weight: 800; }
+    .airport-header p { color: #64748b; font-size: 0.9rem; margin-top: 4px; }
+    .icao { font-size: 0.8rem; background: #f1f5f9; color: #475569; padding: 2px 10px; border-radius: 20px; font-weight: 600; display: inline-block; margin-top: 4px; }
+
+    /* SPOTS GRID */
+    .spots-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;
+    }
+    .spot-card {
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid #e2e8f0;
+    }
+    .spot-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+
+    .spot-top {
+      padding: 20px 20px 16px;
+    }
+    .spot-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .spot-desc { color: #64748b; font-size: 0.9rem; line-height: 1.6; }
+
+    .spot-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 20px 14px; }
+    .tag {
+      font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+    }
+    .tag.dir  { background: #eff6ff; color: #1d4ed8; }
+    .tag.time { background: #f0fdf4; color: #166534; }
+    .tag.diff { background: #fef3c7; color: #92400e; }
+    .tag.lens { background: #fdf4ff; color: #7e22ce; }
+
+    .spot-footer {
+      border-top: 1px solid #f1f5f9;
+      padding: 12px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .map-link {
+      text-decoration: none; font-size: 0.85rem; font-weight: 600;
+      color: #1d4ed8; display: flex; align-items: center; gap: 6px;
+    }
+    .map-link:hover { color: #1e40af; }
+    .rating { font-size: 0.85rem; color: #f59e0b; letter-spacing: 1px; }
+
+    /* TIPS BOX */
+    .tips-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px;
+      padding: 20px 24px; margin-top: 24px;
+      display: flex; gap: 14px;
+    }
+    .tips-box .icon { font-size: 1.5rem; flex-shrink: 0; margin-top: 2px; }
+    .tips-box h4 { font-size: 0.95rem; font-weight: 700; color: #1d4ed8; margin-bottom: 8px; }
+    .tips-box ul { color: #334155; font-size: 0.88rem; line-height: 1.7; padding-right: 16px; }
+
+    /* FOOTER */
+    footer {
+      background: #1a1a2e; color: #94a3b8; text-align: center;
+      padding: 32px 24px; font-size: 0.85rem;
+    }
+    footer a { color: #60a5fa; text-decoration: none; }
+
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.8rem; }
+      .spots-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✈ Planespotting <span>Israel</span></h1>
+  <p>המדריך המקיף לצילום מטוסים בישראל — מקומות, טיפים וכל מה שצריך לדעת</p>
+  <div class="header-badge">📍 4 בסיסים ונמלי תעופה</div>
+</header>
+
+<nav>
+  <a href="#ramat-david">✈ רמת דוד</a>
+  <a href="#palmachim">✈ פלמחים</a>
+  <a href="#natbag">✈ נתב"ג</a>
+  <a href="#herzliya">✈ הרצליה</a>
+</nav>
+
+<div class="container">
+
+  <!-- ===== רמת דוד ===== -->
+  <section class="airport" id="ramat-david">
+    <div class="airport-header">
+      <div class="airport-icon" style="background:#eff6ff">🛡️</div>
+      <div>
+        <h2>בסיס רמת דוד</h2>
+        <p>בסיס חיל האוויר הגדול בצפון — F-16, כטמ"מ ועוד</p>
+        <span class="icao">LLRD • עמק יזרעאל</span>
+      </div>
+    </div>
+
+    <div class="spots-grid">
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 כביש 66 מערב</div>
+          <div class="spot-desc">נקודת הצפייה הקלאסית לבסיס רמת דוד. מבט מעולה על מסלול ההמראה מצד מערב, אידיאלי בשעות הבוקר.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: מזרח</span>
+          <span class="tag time">⏰ בוקר מוקדם</span>
+          <span class="tag lens">🔭 400mm+</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.6651,35.1787" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 כביש 66 מזרח</div>
+          <div class="spot-desc">מבט ישיר על הנחיתות מהצד המזרחי של הבסיס. תאורה טובה אחר הצהריים.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: מערב</span>
+          <span class="tag time">⏰ אחה"צ</span>
+          <span class="tag lens">🔭 300mm+</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.6651,35.1987" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 כביש 70 צפון</div>
+          <div class="spot-desc">זווית שונה על הבסיס מהצד הצפוני. מתאים לצילום מטוסים בגובה נמוך בגישה לנחיתה.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: דרום</span>
+          <span class="tag time">⏰ כל היום</span>
+          <span class="tag lens">🔭 500mm+</span>
+          <span class="tag diff">⭐⭐ בינוני</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.6851,35.1787" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★☆☆</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="icon">💡</div>
+      <div>
+        <h4>טיפים לרמת דוד</h4>
+        <ul>
+          <li>הכניסה לאזור הכביש פתוחה אך אל תתקרבו לגדר הבסיס</li>
+          <li>ימי שישי בבוקר — לרוב יש פעילות אינטנסיבית</li>
+          <li>בחורף יש ערפל בעמק — הגיעו אחרי 9:00</li>
+          <li>מטוסים עיקריים: F-16I סופה, כטמ"מ הרמס</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== פלמחים ===== -->
+  <section class="airport" id="palmachim">
+    <div class="airport-header">
+      <div class="airport-icon" style="background:#f0fdf4">🚀</div>
+      <div>
+        <h2>בסיס פלמחים</h2>
+        <p>בסיס אוויר וחלל — מסוקים, כטמ"מ ושיגורים</p>
+        <span class="icao">LLLB • חוף השרון הדרומי</span>
+      </div>
+    </div>
+
+    <div class="spots-grid">
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 חוף פלמחים</div>
+          <div class="spot-desc">חוף הים ממש ליד הבסיס. מקום פופולרי לצילום כטמ"מ ומסוקים יוצאים לים, במיוחד בשעות אחר הצהריים.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: צפון</span>
+          <span class="tag time">⏰ אחה"צ-שקיעה</span>
+          <span class="tag lens">🔭 200mm+</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=31.8987,34.6987" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 דרך החוף דרום</div>
+          <div class="spot-desc">מבט על הגישה הדרומית לבסיס. אידיאלי לצילום נחיתות מסוקים ורחפנים גדולים.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: צפון-מזרח</span>
+          <span class="tag time">⏰ בוקר</span>
+          <span class="tag lens">🔭 300mm+</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=31.8887,34.6987" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="icon">💡</div>
+      <div>
+        <h4>טיפים לפלמחים</h4>
+        <ul>
+          <li>שקיעות מהממות עם מסוקים ברקע — אל תפספסו!</li>
+          <li>הבסיס סגור לחלוטין — צלמו רק מהחוף הציבורי</li>
+          <li>מטוסים עיקריים: AH-64 אפאצ'י, כטמ"מ שורק</li>
+          <li>בקיץ — הים פתוח ויש הרבה אנשים, הגיעו מוקדם</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== נתב"ג ===== -->
+  <section class="airport" id="natbag">
+    <div class="airport-header">
+      <div class="airport-icon" style="background:#fef3c7">🌍</div>
+      <div>
+        <h2>נמל התעופה בן גוריון</h2>
+        <p>הנמל הבינלאומי הראשי — מאות טיסות ביום</p>
+        <span class="icao">LLBG • TLV • לוד</span>
+      </div>
+    </div>
+
+    <div class="spots-grid">
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 גבעת הספוטרים</div>
+          <div class="spot-desc">המקום הרשמי והטוב ביותר לצילום בנתב"ג! גבעה מוגבהת עם מבט ישיר על שתי המסלולות. יש מקום חניה ושירותים.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: צפון</span>
+          <span class="tag time">⏰ כל היום</span>
+          <span class="tag lens">🔭 200-400mm</span>
+          <span class="tag diff">⭐ קל מאוד</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.0055,34.8706" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★★</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 כביש 1 — גשר אשר</div>
+          <div class="spot-desc">ספוטרים מצלמים מכביש 1 את המטוסים בגישה נמוכה לנחיתה על מסלול 26. מרחק טוב לעדשות בינוניות.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: מזרח</span>
+          <span class="tag time">⏰ אחה"צ</span>
+          <span class="tag lens">🔭 200mm</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.0055,34.8506" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 שדרות בן גוריון — צפון</div>
+          <div class="spot-desc">מבט מהצד הצפוני של הנמל. מצוין לצילום המראות ונחיתות על מסלול 08/26 עם רקע שמיים נקי.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: דרום</span>
+          <span class="tag time">⏰ בוקר</span>
+          <span class="tag lens">🔭 300mm+</span>
+          <span class="tag diff">⭐⭐ בינוני</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.0255,34.8706" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★☆☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 פארק אשר — מערב</div>
+          <div class="spot-desc">פארק ירוק עם מבט על הנמל. מקום נוח לישיבה ארוכה עם כיסאות ואוכל. פחות אידיאלי לטלפוטו אבל נוח לאורחים.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: מזרח</span>
+          <span class="tag time">⏰ ערב</span>
+          <span class="tag lens">🔭 100-200mm</span>
+          <span class="tag diff">⭐ קל מאוד</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.0055,34.8406" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★☆☆</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="icon">💡</div>
+      <div>
+        <h4>טיפים לנתב"ג</h4>
+        <ul>
+          <li>השתמשו ב-Flightradar24 לראות מה מגיע ומתי</li>
+          <li>בקיץ — בוקר מוקדם לתאורה הכי טובה</li>
+          <li>מסלול פעיל: בדקו rwy בשימוש לפני שמגיעים</li>
+          <li>חברות מיוחדות: EL AL, Arkia, Israir + כל העולם</li>
+          <li>שעות שיא: 06:00-09:00 ו-20:00-23:00</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== הרצליה ===== -->
+  <section class="airport" id="herzliya">
+    <div class="airport-header">
+      <div class="airport-icon" style="background:#fdf4ff">🛩️</div>
+      <div>
+        <h2>נמל התעופה הרצליה</h2>
+        <p>נמל תעופה כללי — מטוסים קטנים, ג'טים פרטיים וטיסות חינוך</p>
+        <span class="icao">LLHZ • הרצליה</span>
+      </div>
+    </div>
+
+    <div class="spots-grid">
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 רחוב רון — צפון מסלול</div>
+          <div class="spot-desc">גישה פשוטה מרחוב רון — מבט נהדר על המסלול הצפוני, מתאים לצילום מטוסים קטנים ובסיסי דאייה.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: דרום</span>
+          <span class="tag time">⏰ כל היום</span>
+          <span class="tag lens">🔭 100-200mm</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.1887,34.8337" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 גדר המערבית</div>
+          <div class="spot-desc">מהצד המערבי של הנמל יש גישה קלה לגדר. מתאים לצילום ג'טים פרטיים ומסוקים בחניה.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: מזרח</span>
+          <span class="tag time">⏰ בוקר-אחה"צ</span>
+          <span class="tag lens">🔭 150-300mm</span>
+          <span class="tag diff">⭐ קל</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.1787,34.8237" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★★☆</span>
+        </div>
+      </div>
+
+      <div class="spot-card">
+        <div class="spot-top">
+          <div class="spot-name">📍 קצה המסלול הדרומי</div>
+          <div class="spot-desc">מקום מצוין לתפוס מטוסים בגישה נמוכה לנחיתה. עיקר הפעילות בשעות הבוקר כשיש לימודי טיס.</div>
+        </div>
+        <div class="spot-tags">
+          <span class="tag dir">כיוון: צפון</span>
+          <span class="tag time">⏰ בוקר</span>
+          <span class="tag lens">🔭 200mm+</span>
+          <span class="tag diff">⭐⭐ בינוני</span>
+        </div>
+        <div class="spot-footer">
+          <a class="map-link" href="https://maps.google.com/?q=32.1687,34.8337" target="_blank">🗺️ פתח במפות</a>
+          <span class="rating">★★★☆☆</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tips-box">
+      <div class="icon">💡</div>
+      <div>
+        <h4>טיפים להרצליה</h4>
+        <ul>
+          <li>ימי חול בבוקר — הכי הרבה פעילות לימודי טיסה</li>
+          <li>ג'טים פרטיים נוחתים בעיקר בסופ"ש וחגים</li>
+          <li>מטוסים עיקריים: Cessna, Piper, Beechcraft, עוד ג'טים</li>
+          <li>הנמל קטן — עדשה של 200mm מספיקה ברוב המקרים</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p>✈ Planespotting Israel — <a href="https://helenny.com">helenny.com</a></p>
+  <p style="margin-top:8px">צלמו בבטחה, כבדו את הפרטיות ואת הוראות הבטיחות</p>
+</footer>
+
+</body>
+</html>

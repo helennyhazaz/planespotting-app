@@ -132,6 +132,28 @@
       header h1 { font-size: 1.8rem; }
       .spots-grid { grid-template-columns: 1fr; }
     }
+
+    /* LIGHTBOX */
+    .lightbox-overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      align-items: center; justify-content: center;
+    }
+    .lightbox-overlay.active { display: flex; }
+    .lightbox-overlay img {
+      max-width: 92vw; max-height: 88vh;
+      border-radius: 10px; box-shadow: 0 8px 60px rgba(0,0,0,0.7);
+    }
+    .lightbox-close {
+      position: fixed; top: 20px; left: 28px;
+      font-size: 2.2rem; color: #fff; cursor: pointer;
+      background: none; border: none; line-height: 1;
+      opacity: 0.8; transition: opacity 0.2s;
+    }
+    .lightbox-close:hover { opacity: 1; }
+    .spot-img { cursor: zoom-in; transition: opacity 0.2s; }
+    .spot-img:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -169,9 +191,9 @@
           <div class="spot-desc">המקום הטוב ביותר לצלם בשדה ראשון לציון — מנחת אולטרה לייט מדהים! הדשא בחניית האורחים תופס את כל נמל התעופה בזווית מושלמת. מבט פנורמי על כל הפעילות, קרוב למסלול ונוח לישיבה.</div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:0 20px 16px;">
-          <div><img src="rishon-1.jpg" alt="ראשון לציון" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
-          <div><img src="rishon-2.jpg" alt="ראשון לציון" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
-          <div><img src="rishon-3.jpg" alt="ראשון לציון" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
+          <div><img src="rishon-1.jpg" alt="ראשון לציון" class="spot-img" onclick="openLightbox(this.src)" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
+          <div><img src="rishon-2.jpg" alt="ראשון לציון" class="spot-img" onclick="openLightbox(this.src)" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
+          <div><img src="rishon-3.jpg" alt="ראשון לציון" class="spot-img" onclick="openLightbox(this.src)" style="width:100%; border-radius:8px; object-fit:cover; aspect-ratio:4/3;" /><div style="font-size:0.75rem; color:#888; margin-top:4px; text-align:left;">📷 קרדיט: אורי נוח</div></div>
         </div>
         <div class="spot-tags">
           <span class="tag dir">כיוון: מסלול</span>
@@ -479,10 +501,28 @@
 
 </div>
 
+<!-- LIGHTBOX -->
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="" onclick="event.stopPropagation()" />
+</div>
+
 <footer>
   <p>✈ Planespotting Israel — <a href="https://helenny.com">helenny.com</a></p>
   <p style="margin-top:8px">צלמו בבטחה, כבדו את הפרטיות ואת הוראות הבטיחות</p>
 </footer>
 
+<script>
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
 </body>
 </html>
